@@ -15,7 +15,8 @@ firebase_admin.initialize_app(cred, {"storageBucket": "meme-generator-redes-neur
 
 bucket = storage.bucket()
 
-async def upload_image(file: UploadFile) -> str:
-    blob = bucket.blob(f"images/{uuid.uuid4()}")
-    blob.upload_from_file(file.file, content_type=file.content_type)
+async def upload_image(file: UploadFile, content_type: str = "application/octet-stream") -> str:
+    blob = bucket.blob(f"images/{uuid.uuid4()}.png")
+    blob.upload_from_file(file.file, content_type=content_type)
+    blob.make_public() 
     return blob.public_url
