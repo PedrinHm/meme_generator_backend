@@ -32,7 +32,7 @@ def extract_data_from_response(response_text):
 def generate_meme(file: UploadFile) -> dict:
     image_url = f"https://dummyimage.com/{file.filename}"
     prompt = (
-        f"Quero criar um meme. Para a imagem em {image_url}, crie uma legenda engraçada. Por favor, responda no seguinte formato JSON: 'legenda': 'sua_legenda_aqui.'"
+        f"Quero criar um meme. Para a imagem em {image_url}, crie uma legenda engraçada, e nao tão grande, para caber bem na imagem. Por favor, responda no seguinte formato JSON: 'legenda': 'sua_legenda_aqui.'"
     )
 
     response = chat_session.send_message(prompt)
