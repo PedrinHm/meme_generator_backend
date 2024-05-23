@@ -19,7 +19,7 @@ model = genai.GenerativeModel(
 
 chat_session = model.start_chat(history=[])
 
-def extract_data_from_response(response_text):
+def extract_subtitle_from_response(response_text):
     try:
         response_text = response_text.strip('```json').strip('```')
         response_json = json.loads(response_text)
@@ -29,7 +29,7 @@ def extract_data_from_response(response_text):
         print(f"Failed to decode JSON from response: {str(e)}")
     return {"legenda": legenda}
 
-def generate_meme(file: UploadFile) -> dict:
+def generate_subtitle(file: UploadFile) -> dict:
     image_url = f"https://dummyimage.com/{file.filename}"
     prompt = (
         f"Quero criar um meme. Para a imagem em {image_url}, crie uma legenda engraçada, e nao tão grande, para caber bem na imagem. Por favor, responda no seguinte formato JSON: 'legenda': 'sua_legenda_aqui.'"
@@ -38,11 +38,11 @@ def generate_meme(file: UploadFile) -> dict:
     response = chat_session.send_message(prompt)
     response_text = response.text.strip()
 
-    meme_data = extract_data_from_response(response_text)
+    meme_subtitles = extract_subtitle_from_response(response_text)
     
-    return meme_data
+    return meme_subtitles
 
-def apply_caption_to_image(file: UploadFile, caption):
+def apply_subtitles_to_image(file: UploadFile, caption):
     try:
         image = Image.open(file.file)
     except UnidentifiedImageError:
@@ -73,15 +73,15 @@ def apply_caption_to_image(file: UploadFile, caption):
 
     return image
 
-def generate_meme_with_caption(file: UploadFile) -> str:
-    meme_data = generate_meme(file)
-    caption = meme_data.get("legenda", "Sem legenda")
-    image_with_caption = apply_caption_to_image(file, caption)
+def generate_meme_with_subtitles(file: UploadFile) -> str:
+    meme_subtitles = generate_subtitle(file)
+    subtitles = meme_subtitles.get("legenda", "Sem legenda")
+    image_with_subtitles = apply_subtitles_to_image(file, subtitles)
     
     with tempfile.TemporaryDirectory() as temp_dir:
         temp_image_path = os.path.join(temp_dir, "temp_image_with_caption.png")
-        image_with_caption.save(temp_image_path, format="PNG")
-        persistent_image_path = os.path.join(tempfile.gettempdir(), "temp_image_with_caption.png")
-        shutil.move(temp_image_path, persistent_image_path)
+        image_with_subtitles.save(temp_image_path, format="PNG")
+        meme_png = os.path.join(tempfile.gettempdir(), "temp_image_with_caption.png")
+        shutil.move(temp_image_path, meme_png)
     
-    return persistent_image_path
+    return meme_png
