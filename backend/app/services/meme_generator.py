@@ -1,3 +1,9 @@
+import pathlib
+import textwrap
+from IPython.display import display
+from IPython.display import Markdown
+import PIL.Image
+import urllib.request 
 import os
 import json
 import google.generativeai as genai
@@ -13,11 +19,7 @@ if not gemini_api_key:
 
 genai.configure(api_key=gemini_api_key)
 
-model = genai.GenerativeModel(
-    model_name="gemini-1.5-flash-latest",
-)
-
-chat_session = model.start_chat(history=[])
+model = genai.GenerativeModel("gemini-pro-vision")
 
 def extract_subtitle_from_response(response_text):
     try:
@@ -25,6 +27,7 @@ def extract_subtitle_from_response(response_text):
         response_json = json.loads(response_text)
         legenda = response_json.get("legenda", "Legenda não encontrada.")
     except json.JSONDecodeError as e:
+        print(response_text)
         legenda = "Legenda não encontrada."
         print(f"Failed to decode JSON from response: {str(e)}")
     return {"legenda": legenda}
@@ -32,13 +35,16 @@ def extract_subtitle_from_response(response_text):
 def generate_subtitle(file: UploadFile) -> dict:
     image_url = f"https://dummyimage.com/{file.filename}"
     prompt = (
-        f"Quero criar um meme. Para a imagem em {image_url}, crie uma legenda engraçada, e nao tão grande, para caber bem na imagem. Por favor, responda no seguinte formato JSON: 'legenda': 'sua_legenda_aqui.'"
+        f"Quero criar um meme. Crie uma legenda engraçada, e nao tão grande, para caber bem na imagem. Por favor, responda no seguinte formato JSON: 'legenda': 'sua_legenda_aqui.'"
     )
 
-    response = chat_session.send_message(prompt)
-    response_text = response.text.strip()
+    response = model.generate_content(
+        ["Quero criar um meme. Crie uma legenda engraçada, e nao tão grande, para caber bem na imagem. Por favor, responda no seguinte formato JSON: 'legenda': 'sua_legenda_aqui.", image_url],
+        stream=True
+        )
+    response.resolve()
 
-    meme_subtitles = extract_subtitle_from_response(response_text)
+    meme_subtitles = extract_subtitle_from_response(response.text)
     
     return meme_subtitles
 
