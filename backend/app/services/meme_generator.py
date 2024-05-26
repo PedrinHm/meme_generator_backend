@@ -12,6 +12,7 @@ from fastapi import UploadFile
 import tempfile
 import shutil
 import textwrap
+import re
 import io
 
 gemini_api_key = os.getenv("GEMINI_API_KEY")
@@ -22,15 +23,20 @@ genai.configure(api_key=gemini_api_key)
 
 model = genai.GenerativeModel("gemini-pro-vision")
 
-def extract_subtitle_from_response(response_text):
+def extract_subtitle_from_response(response_text: str):
     try:
-        response_text = response_text.strip('```json').strip('```')
-        response_json = json.loads(response_text)
+        match = re.search(r"```json\s*(\{.*\})\s*```", response_text, re.DOTALL)
+        if match:
+            json_text = match.group(1)
+        else:
+            raise ValueError("JSON not found in response")
+        
+        response_json = json.loads(json_text)
         legenda = response_json.get("legenda", "Legenda não encontrada.")
     except json.JSONDecodeError as e:
-        print(response_text)
         legenda = "Legenda não encontrada."
-        print(f"Failed to decode JSON from response: {str(e)}")
+    except ValueError as e:
+        legenda = "Legenda não encontrada."
     return {"legenda": legenda}
 
 def generate_subtitle(file: UploadFile) -> dict:
@@ -38,7 +44,7 @@ def generate_subtitle(file: UploadFile) -> dict:
     image = Image.open(io.BytesIO(image_content))
 
     response = model.generate_content(
-        ["Quero criar um meme. Crie uma legenda engraçada, e nao tão grande, para caber bem na imagem. Por favor, responda no seguinte formato JSON: 'legenda': 'sua_legenda_aqui.", image],
+        ["Quero criar um meme. Crie uma legenda engraçada para a imagem. Por favor, responda no seguinte formato JSON: 'legenda': 'sua_legenda_aqui.", image],
         stream=True
     )
     response.resolve()
