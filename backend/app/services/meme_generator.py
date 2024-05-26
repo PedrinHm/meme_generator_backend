@@ -12,6 +12,7 @@ from fastapi import UploadFile
 import tempfile
 import shutil
 import textwrap
+import io
 
 gemini_api_key = os.getenv("GEMINI_API_KEY")
 if not gemini_api_key:
@@ -33,15 +34,13 @@ def extract_subtitle_from_response(response_text):
     return {"legenda": legenda}
 
 def generate_subtitle(file: UploadFile) -> dict:
-    image_url = f"https://dummyimage.com/{file.filename}"
-    prompt = (
-        f"Quero criar um meme. Crie uma legenda engraçada, e nao tão grande, para caber bem na imagem. Por favor, responda no seguinte formato JSON: 'legenda': 'sua_legenda_aqui.'"
-    )
+    image_content = file.file.read()
+    image = Image.open(io.BytesIO(image_content))
 
     response = model.generate_content(
-        ["Quero criar um meme. Crie uma legenda engraçada, e nao tão grande, para caber bem na imagem. Por favor, responda no seguinte formato JSON: 'legenda': 'sua_legenda_aqui.", image_url],
+        ["Quero criar um meme. Crie uma legenda engraçada, e nao tão grande, para caber bem na imagem. Por favor, responda no seguinte formato JSON: 'legenda': 'sua_legenda_aqui.", image],
         stream=True
-        )
+    )
     response.resolve()
 
     meme_subtitles = extract_subtitle_from_response(response.text)
