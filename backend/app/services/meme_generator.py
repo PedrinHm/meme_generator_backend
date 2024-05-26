@@ -43,31 +43,41 @@ def generate_subtitle(file: UploadFile) -> dict:
         stream=True
     )
     response.resolve()
-
+    
+    print(response.text)
+    
     meme_subtitles = extract_subtitle_from_response(response.text)
     
+    print(response.text)
+
     return meme_subtitles
 
-def apply_subtitles_to_image(file: UploadFile, caption):
+def apply_subtitles_to_image(file: UploadFile, caption: str):
     try:
         image = Image.open(file.file)
     except UnidentifiedImageError:
         raise ValueError("O arquivo fornecido não é uma imagem válida.")
-
-    draw = ImageDraw.Draw(image)
-    font = ImageFont.truetype("arial.ttf", size=36)
     
-    max_width = image.width - 20 
+    draw = ImageDraw.Draw(image)
+    
+    # Substitua pelo caminho correto para a fonte Impact no seu sistema
+    font_path = "/path/to/impact.ttf"
+    try:
+        font = ImageFont.truetype(font_path, size=36)
+    except IOError:
+        raise ValueError("A fonte 'Impact' não foi encontrada. Verifique o caminho da fonte.")
+
+    max_width = image.width - 20
     char_width, _ = draw.textbbox((0, 0), 'A', font=font)[2:]
     wrapped_caption = textwrap.fill(caption, width=max_width // char_width)
-    
+
     text_size = draw.textbbox((0, 0), wrapped_caption, font=font)
     text_width, text_height = text_size[2], text_size[3]
     width, height = image.size
     x = (width - text_width) / 2
-    y = height - text_height - 10 
+    y = height - text_height - 10
 
-    outline_range = 2  
+    outline_range = 2
     for adj in range(-outline_range, outline_range + 1):
         if adj != 0:
             draw.text((x + adj, y), wrapped_caption, font=font, fill="black")
