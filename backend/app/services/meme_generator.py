@@ -1,19 +1,14 @@
-import pathlib
-import textwrap
-from IPython.display import display
-from IPython.display import Markdown
-import PIL.Image
-import urllib.request 
 import os
 import json
+import re
+import io
 import google.generativeai as genai
+
 from PIL import Image, ImageDraw, ImageFont, UnidentifiedImageError
 from fastapi import UploadFile
 import tempfile
 import shutil
 import textwrap
-import re
-import io
 
 gemini_api_key = os.getenv("GEMINI_API_KEY")
 if not gemini_api_key:
