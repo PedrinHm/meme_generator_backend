@@ -60,32 +60,59 @@ def apply_subtitles_to_image(file: UploadFile, caption: str):
     
     draw = ImageDraw.Draw(image)
     
-    # Substitua pelo caminho correto para a fonte Impact no seu sistema
-    font_path = "/path/to/impact.ttf"
+    # Caminho para a fonte dentro do diretório do projeto
+    font_path = os.path.join(os.path.dirname(__file__), "fonts", "impact.ttf")
     try:
-        font = ImageFont.truetype(font_path, size=36)
+        font_size = 70  # Aumentar o tamanho da fonte
+        font = ImageFont.truetype(font_path, size=font_size)
     except IOError:
         raise ValueError("A fonte 'Impact' não foi encontrada. Verifique o caminho da fonte.")
-
-    max_width = image.width - 20
-    char_width, _ = draw.textbbox((0, 0), 'A', font=font)[2:]
-    wrapped_caption = textwrap.fill(caption, width=max_width // char_width)
-
-    text_size = draw.textbbox((0, 0), wrapped_caption, font=font)
-    text_width, text_height = text_size[2], text_size[3]
+    
     width, height = image.size
-    x = (width - text_width) / 2
-    y = height - text_height - 10
-
+    max_width = width - 20
+    
+    # Ajustar quebra de linha da legenda
+    caption_lines = textwrap.fill(caption, width=40).split('\n')
+    mid_index = len(caption_lines) // 2
+    top_caption = '\n'.join(caption_lines[:mid_index])
+    bottom_caption = '\n'.join(caption_lines[mid_index:])
+    
+    # Diminuir a margem para o topo e a parte inferior
+    margin_top = 5
+    margin_bottom = 5
+    
+    # Desenhar legenda no topo
+    text_size = draw.textbbox((0, 0), top_caption, font=font)
+    text_width, text_height = text_size[2], text_size[3]
+    x_top = (width - text_width) / 2
+    y_top = margin_top  # Margem do topo
+    
+    # Desenhar contorno do texto no topo
     outline_range = 2
     for adj in range(-outline_range, outline_range + 1):
         if adj != 0:
-            draw.text((x + adj, y), wrapped_caption, font=font, fill="black")
-            draw.text((x, y + adj), wrapped_caption, font=font, fill="black")
-            draw.text((x + adj, y + adj), wrapped_caption, font=font, fill="black")
-            draw.text((x - adj, y - adj), wrapped_caption, font=font, fill="black")
+            draw.text((x_top + adj, y_top), top_caption, font=font, fill="black")
+            draw.text((x_top, y_top + adj), top_caption, font=font, fill="black")
+            draw.text((x_top + adj, y_top + adj), top_caption, font=font, fill="black")
+            draw.text((x_top - adj, y_top - adj), top_caption, font=font, fill="black")
 
-    draw.text((x, y), wrapped_caption, font=font, fill="white")
+    draw.text((x_top, y_top), top_caption, font=font, fill="white")
+
+    # Desenhar legenda na parte inferior
+    text_size = draw.textbbox((0, 0), bottom_caption, font=font)
+    text_width, text_height = text_size[2], text_size[3]
+    x_bottom = (width - text_width) / 2
+    y_bottom = height - text_height - margin_bottom  # Margem inferior
+    
+    # Desenhar contorno do texto na parte inferior
+    for adj in range(-outline_range, outline_range + 1):
+        if adj != 0:
+            draw.text((x_bottom + adj, y_bottom), bottom_caption, font=font, fill="black")
+            draw.text((x_bottom, y_bottom + adj), bottom_caption, font=font, fill="black")
+            draw.text((x_bottom + adj, y_bottom + adj), bottom_caption, font=font, fill="black")
+            draw.text((x_bottom - adj, y_bottom - adj), bottom_caption, font=font, fill="black")
+
+    draw.text((x_bottom, y_bottom), bottom_caption, font=font, fill="white")
 
     return image
 
