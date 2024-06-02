@@ -6,10 +6,10 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Lista de origens permitidas, use "*" para permitir todas
+    allow_origins=["*"],  
     allow_credentials=True,
-    allow_methods=["*"],  # Métodos HTTP permitidos
-    allow_headers=["*"],  # Cabeçalhos HTTP permitidos
+    allow_methods=["*"],  
+    allow_headers=["*"],  
 )
 
 app.include_router(memes.router)
