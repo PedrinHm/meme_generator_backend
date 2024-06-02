@@ -54,14 +54,12 @@ def generate_subtitle(file: UploadFile) -> dict:
 
 def correct_image_orientation(img):
     try:
-        # Tentar obter a orientação da imagem a partir dos dados EXIF
         for orientation in ExifTags.TAGS.keys():
             if ExifTags.TAGS[orientation] == 'Orientation':
                 break
         
         exif = dict(img._getexif().items())
 
-        # Rotacionar ou inverter a imagem com base no valor da orientação
         if exif[orientation] == 3:
             img = img.rotate(180, expand=True)
         elif exif[orientation] == 6:
@@ -69,7 +67,6 @@ def correct_image_orientation(img):
         elif exif[orientation] == 8:
             img = img.rotate(90, expand=True)
     except (AttributeError, KeyError, IndexError):
-        # Casos em que não há dados EXIF ou eles não contêm a orientação
         pass
 
     return img
@@ -77,7 +74,7 @@ def correct_image_orientation(img):
 def apply_subtitles_to_image(file, caption: str):
     try:
         image = Image.open(file.file)
-        image = correct_image_orientation(image)  # Corrigir a orientação da imagem
+        image = correct_image_orientation(image) 
     except UnidentifiedImageError:
         raise ValueError("O arquivo fornecido não é uma imagem válida.")
 
@@ -93,39 +90,28 @@ def apply_subtitles_to_image(file, caption: str):
 
     draw = ImageDraw.Draw(image)
 
-    # Cálculo para divisão de linhas
     mid_point = len(caption_lines) // 2
     top_lines = caption_lines[:mid_point]
     bottom_lines = caption_lines[mid_point:]
 
-    # Adicionar borda ao texto
-    def draw_text_with_border(x, y, text, font):
-        # Posições para o contorno
-        positions = [(-1, -1), (1, -1), (-1, 1), (1, 1)]
-        for pos in positions:
-            draw.text((x + pos[0], y + pos[1]), text, font=font, fill="black")
-        draw.text((x, y), text, font=font, fill="white")
-
-    # Texto no topo
     y_offset_top = 10
     for line in top_lines:
         line_width = draw.textlength(line, font=font)
         x = (width - line_width) / 2
-        draw_text_with_border(x, y_offset_top, line, font)
+        draw.text((x, y_offset_top), line, font=font, fill='white', stroke_width=2, stroke_fill='black')
         y_offset_top += font_size
 
-    # Texto no fundo
     y_offset_bottom = height - (len(bottom_lines) * font_size) - 10
     for line in bottom_lines:
         line_width = draw.textlength(line, font=font)
         x = (width - line_width) / 2
-        draw_text_with_border(x, y_offset_bottom, line, font)
+        draw.text((x, y_offset_bottom), line, font=font, fill='white', stroke_width=2, stroke_fill='black')
         y_offset_bottom += font_size
 
     return image
 
 def generate_meme_with_subtitles(file: UploadFile) -> str:
-    max_attempts = 3  # Número máximo de tentativas para gerar a legenda
+    max_attempts = 3 
     attempt = 0
     meme_subtitles = None
 

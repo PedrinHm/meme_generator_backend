@@ -22,8 +22,7 @@ async def upload_image(file: UploadFile, content_type: str = "application/octet-
     return blob.public_url
 
 def get_image_urls():
-    # Certifique-se de que o app do Firebase já foi inicializado em algum lugar antes de chamar esta função
-    bucket = storage.bucket()  # O nome do bucket deve ser definido durante a inicialização do app Firebase
-    blobs = bucket.list_blobs(prefix="images/")  # Ajuste o prefixo conforme sua organização de arquivos
+    bucket = storage.bucket()  
+    blobs = bucket.list_blobs(prefix="images/") 
     urls = [blob.public_url for blob in blobs if blob.name.endswith(".png")]
     return urls
