@@ -12,4 +12,4 @@ Input do Usuário: Os usuários poderão fazer upload de suas imagens.
 Geração de Memes: As imagens receberão legendas engraçadas geradas pelo sistema.
 Exibição ao Vivo: As imagens serão exibidas em um monitor, em uma "exibição de slides" ao vivo, mostrando os memes criados em tempo real.
 ## Objetivo
-O objetivo deste projeto é criar algo divertido que prenda a atenção dos usuários, proporcionando momentos de humor e interação.(E o principal, ser aprovado em redes neurais)
+O objetivo deste projeto é criar algo divertido que prenda a atenção dos usuários, proporcionando momentos de humor e interação. (E o principal, ser aprovado em redes neurais)
