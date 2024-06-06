@@ -39,7 +39,7 @@ def generate_subtitle(file: UploadFile) -> dict:
     image = Image.open(io.BytesIO(image_content))
 
     response = model.generate_content(
-        ["Quero criar um meme. Crie uma legenda engraçada para a imagem. Por favor, responda no seguinte formato JSON: 'legenda': 'sua_legenda_aqui.", image],
+        ["Quero criar um meme. Crie uma legenda engraçada para a imagem. Com humor acido. Pode usar referencias de cultura pop, tecnologia, levando em conta o que compoe a imagem. Por favor, responda no seguinte formato JSON: 'legenda': 'sua_legenda_aqui.", image],
         stream=True
     )
     response.resolve()
