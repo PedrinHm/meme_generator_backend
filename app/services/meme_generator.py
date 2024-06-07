@@ -74,23 +74,23 @@ def correct_image_orientation(img):
 def apply_subtitles_to_image(file, caption: str):
     try:
         image = Image.open(file.file)
-        image = correct_image_orientation(image) 
+        image = correct_image_orientation(image)
     except UnidentifiedImageError:
         raise ValueError("O arquivo fornecido não é uma imagem válida.")
 
     width, height = image.size
-
     font_size = width // 20
     max_width = width - 40
-    
+
+    font_path = os.path.join(os.path.dirname(__file__), 'fonts', 'Impact.ttf')
+    if not os.path.exists(font_path):
+        raise FileNotFoundError(f"O arquivo da fonte não foi encontrado no caminho: {font_path}")
+
     try:
-        font_path = os.path.join(os.path.dirname(__file__), 'fonts', 'impact.ttf')
         font = ImageFont.truetype(font_path, size=font_size)
         print("Fonte carregada com sucesso.")
     except IOError as e:
-        print(f"Erro ao carregar a fonte: {e}")
-    print("Caminho da fonte:", font_path)
-    print(os.getcwd())
+        raise IOError(f"Erro ao carregar a fonte: {e}")
         
     chars_per_line = max_width // (font_size // 2)
     caption_lines = textwrap.fill(caption, width=chars_per_line).split('\n')
