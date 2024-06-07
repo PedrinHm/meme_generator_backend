@@ -1,19 +1,36 @@
 import firebase_admin
-from firebase_admin import credentials, storage
+from firebase_admin import credentials, storage, initialize_app
 from fastapi import UploadFile
 import uuid
 import os
+import json
 
-base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
-cred_path = os.path.join(base_dir, 'credentials', 'firebase-adminsdk.json')
+def load_firebase_credentials():
+    # Assegura que todas as variáveis necessárias estão definidas
+    cred_keys = [
+        "type", "project_id", "private_key_id", "private_key",
+        "client_email", "client_id", "auth_uri", "token_uri",
+        "auth_provider_x509_cert_url", "client_x509_cert_url"
+    ]
+    
+    cred_dict = {}
+    for key in cred_keys:
+        value = os.getenv(f"FIREBASE_{key.upper()}")
+        if not value:
+            raise ValueError(f"Variável de ambiente FIREBASE_{key.upper()} não está definida.")
+        if key == 'private_key':
+            value = value.replace('\\n', '\n')
+        cred_dict[key] = value
 
-if not os.path.exists(cred_path):
-    raise FileNotFoundError(f"Arquivo de credenciais não encontrado: {cred_path}")
+    print("Credenciais Carregadas:", cred_dict)  # Imprime para verificar os valores
+    return credentials.Certificate(cred_dict)
 
-cred = credentials.Certificate(cred_path)
-firebase_admin.initialize_app(cred, {"storageBucket": "meme-generator-redes-neurais.appspot.com"})
+# Inicializa o Firebase
+firebase_app = initialize_app(load_firebase_credentials(), {"storageBucket": "meme-generator-redes-neurais.appspot.com"})
 
+# Obtém o bucket associado ao Firebase app inicializado
 bucket = storage.bucket()
+
 
 async def upload_image(file: UploadFile, content_type: str = "application/octet-stream") -> str:
     blob = bucket.blob(f"images/{uuid.uuid4()}.png")
