@@ -15,7 +15,7 @@ def load_firebase_credentials():
     
     cred_dict = {}
     for key in cred_keys:
-        value = os.getenv(f"FIREBASE_{key.upper()}")
+        value = os.getenv(f"{key.upper()}")
         if not value:
             raise ValueError(f"Variável de ambiente FIREBASE_{key.upper()} não está definida.")
         if key == 'private_key':
