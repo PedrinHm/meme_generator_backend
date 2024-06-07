@@ -83,6 +83,7 @@ def apply_subtitles_to_image(file, caption: str):
     font_size = width // 20
     max_width = width - 40
     font_path = os.path.join(os.path.dirname(__file__), "fonts", "impact.ttf")
+    print("Caminho da fonte:", font_path)
     font = ImageFont.truetype(font_path, size=font_size)
 
     chars_per_line = max_width // (font_size // 2)
