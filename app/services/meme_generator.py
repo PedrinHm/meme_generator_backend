@@ -84,7 +84,7 @@ def apply_subtitles_to_image(file, caption: str):
     max_width = width - 40
     
     try:
-        font_path = '/fonts/impact.ttf'
+        font_path = os.path.join(os.path.dirname(__file__), 'fonts', 'impact.ttf')
         font = ImageFont.truetype(font_path, size=font_size)
         print("Fonte carregada com sucesso.")
     except IOError as e:
