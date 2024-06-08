@@ -10,8 +10,6 @@ import tempfile
 import shutil
 import textwrap
 
-Image.MAX_IMAGE_PIXELS = None
-
 gemini_api_key = os.getenv("GEMINI_API_KEY")
 if not gemini_api_key:
     raise ValueError("A chave de API GEMINI_API_KEY não foi configurada.")
@@ -41,7 +39,7 @@ def generate_subtitle(file: UploadFile) -> dict:
     image = Image.open(io.BytesIO(image_content))
 
     response = model.generate_content(
-        ["Imagine que você é um jovem da geração z que gosta de fazer memes. Os memes gerados aqui tem como publico alvo estudantes universitarios. Crie uma legenda muito engraçada para a imagem, levando em conta que são memes para a geração z. Pode usar referencias de cultura pop. Por favor, responda no seguinte formato JSON: 'legenda': 'sua_legenda_aqui.", image],
+        ["O que você vê na imagem?  Baseado no conteudo que vê na imagem, sua missão é criar uma legenda hilária para a imagem abaixo, algo que ressoe com estudantes universitários, caso tenha pessoa na foto, leve em conta o sentimento que ela aparenta estar sentindo. Utilize gírias. Seja criativo e faça-nos rir!  Por favor, responda no seguinte formato JSON: 'legenda': 'sua_legenda_aqui.", image],
         stream=True
     )
     response.resolve()
