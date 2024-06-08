@@ -82,7 +82,7 @@ def apply_subtitles_to_image(file, caption: str):
     font_size = width // 20
     max_width = width - 40
 
-    font_path = os.path.join(os.path.dirname(__file__), 'fonts', 'Impact.ttf')
+    font_path = os.path.join(os.path.dirname(__file__), 'fonts', 'ArchivoBlack-Regular.ttf')
     if not os.path.exists(font_path):
         raise FileNotFoundError(f"O arquivo da fonte não foi encontrado no caminho: {font_path}")
 
