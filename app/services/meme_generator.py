@@ -10,6 +10,8 @@ import tempfile
 import shutil
 import textwrap
 
+Image.MAX_IMAGE_PIXELS = None
+
 gemini_api_key = os.getenv("GEMINI_API_KEY")
 if not gemini_api_key:
     raise ValueError("A chave de API GEMINI_API_KEY não foi configurada.")
@@ -82,7 +84,7 @@ def apply_subtitles_to_image(file, caption: str):
     font_size = width // 20
     max_width = width - 40
 
-    font_path = os.path.join(os.path.dirname(__file__), 'fonts', 'ArchivoBlack-Regular.ttf')
+    font_path = os.path.join(os.path.dirname(__file__), 'fonts', 'BebasNeue-Regular.ttf')
     if not os.path.exists(font_path):
         raise FileNotFoundError(f"O arquivo da fonte não foi encontrado no caminho: {font_path}")
 
