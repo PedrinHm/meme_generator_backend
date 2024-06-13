@@ -4,6 +4,9 @@ import re
 import io
 import google.generativeai as genai
 
+import backoff
+from google.api_core.exceptions import RetryError
+
 from PIL import Image, ImageDraw, ImageFont, UnidentifiedImageError, ExifTags
 from fastapi import UploadFile
 import tempfile
@@ -34,6 +37,7 @@ def extract_subtitle_from_response(response_text: str):
         legenda = "Legenda não encontrada."
     return {"legenda": legenda}
 
+@backoff.on_exception(backoff.expo, (RetryError, IOError), max_tries=5)
 def generate_subtitle(file: UploadFile) -> dict:
     image_content = file.file.read()
     image = Image.open(io.BytesIO(image_content))
