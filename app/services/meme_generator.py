@@ -4,9 +4,6 @@ import re
 import io
 import google.generativeai as genai
 
-import backoff
-from google.api_core.exceptions import RetryError
-
 from PIL import Image, ImageDraw, ImageFont, UnidentifiedImageError, ExifTags
 from fastapi import UploadFile
 import tempfile
@@ -39,14 +36,7 @@ def extract_subtitle_from_response(response_text: str):
 
 def generate_subtitle(file: UploadFile) -> dict:
     image_content = file.file.read()
-    stream = io.BytesIO(image_content)
-    stream.seek(0)  # Assegura que o ponteiro está no início do stream
-    try:
-        image = Image.open(stream)
-        image.load()  # Força a leitura da imagem para validar completamente
-    except UnidentifiedImageError as e:
-        print("Erro ao identificar a imagem:", e)
-        raise e  # Pode considerar tratar ou retornar um erro específico
+    image = Image.open(io.BytesIO(image_content))
 
     response = model.generate_content(
         [
