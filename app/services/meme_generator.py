@@ -37,7 +37,6 @@ def extract_subtitle_from_response(response_text: str):
         legenda = "Legenda não encontrada."
     return {"legenda": legenda}
 
-@backoff.on_exception(backoff.expo, (RetryError, IOError), max_tries=5)
 def generate_subtitle(file: UploadFile) -> dict:
     image_content = file.file.read()
     stream = io.BytesIO(image_content)
