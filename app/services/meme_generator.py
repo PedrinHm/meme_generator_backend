@@ -35,36 +35,15 @@ def extract_subtitle_from_response(response_text: str):
     return {"legenda": legenda}
 
 def generate_subtitle(file: UploadFile) -> dict:
-    try:
-        # Resetando o ponteiro para o início do arquivo e passando diretamente para o PIL
-        file.file.seek(0)
-        image = Image.open(file.file)
-        image.load()  # Esta chamada carrega a imagem e verifica sua validade
-    except UnidentifiedImageError:
-        raise ValueError("O arquivo fornecido não é uma imagem válida.")
+    image_content = file.file.read()
+    image = Image.open(io.BytesIO(image_content))
 
     response = model.generate_content(
-        [
-            "Desafio: Crie uma Legenda Hilária!\n\n"
-            "Instruções:\n"
-            "Observe a imagem abaixo. Baseando-se nos elementos visuais e nas emoções apresentadas pelas pessoas (se houver), "
-            "sua missão é criar uma legenda engraçada que possa resonar especialmente com o público universitário. Use gírias(Com cautela) "
-            "populares entre estudantes para tornar a legenda mais autêntica e divertida.\n\n"
-            "Formato da Resposta:\n"
-            "Por favor, envie sua legenda no formato JSON abaixo para manter a padronização das respostas:\n"
-            "{\n"
-            "  \"legenda\": \"Insira sua legenda aqui\"\n"
-            "}\n\n"
-            "Dicas:\n"
-            "- Considere o contexto da imagem para uma maior relevância.\n"
-            "- Explore o humor relacionado à vida acadêmica para maior identificação com o público-alvo.\n"
-            "- Seja criativo e busque fazer-nos rir!",
-            image
-        ],
+        ["Imagine que você é um jovem da geração z que gosta de fazer memes. Os memes gerados aqui tem como publico alvo estudantes universitarios. Crie uma legenda muito engraçada para a imagem, levando em conta que são memes para a geração z. Pode usar referencias de cultura pop. Por favor, responda no seguinte formato JSON: 'legenda': 'sua_legenda_aqui.", image],
         stream=True
     )
-
     response.resolve()
+    
     print(response.text)
     
     meme_subtitles = extract_subtitle_from_response(response.text)
