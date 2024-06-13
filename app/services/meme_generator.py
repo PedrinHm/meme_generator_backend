@@ -39,9 +39,26 @@ def generate_subtitle(file: UploadFile) -> dict:
     image = Image.open(io.BytesIO(image_content))
 
     response = model.generate_content(
-        ["O que você vê na imagem?  Baseado no conteudo que vê na imagem, sua missão é criar uma legenda hilária para a imagem abaixo, algo que ressoe com estudantes universitários, caso tenha pessoa na foto, leve em conta o sentimento que ela aparenta estar sentindo. Utilize gírias. Seja criativo e faça-nos rir!  Por favor, responda no seguinte formato JSON: 'legenda': 'sua_legenda_aqui.", image],
+        [
+            "Desafio: Crie uma Legenda Hilária!\n\n"
+            "Instruções:\n"
+            "Observe a imagem abaixo. Baseando-se nos elementos visuais e nas emoções apresentadas pelas pessoas (se houver), "
+            "sua missão é criar uma legenda engraçada que possa resonar especialmente com o público universitário. Use gírias(Com cautela) "
+            "populares entre estudantes para tornar a legenda mais autêntica e divertida.\n\n"
+            "Formato da Resposta:\n"
+            "Por favor, envie sua legenda no formato JSON abaixo para manter a padronização das respostas:\n"
+            "{\n"
+            "  \"legenda\": \"Insira sua legenda aqui\"\n"
+            "}\n\n"
+            "Dicas:\n"
+            "- Considere o contexto da imagem para uma maior relevância.\n"
+            "- Explore o humor relacionado à vida acadêmica para maior identificação com o público-alvo.\n"
+            "- Seja criativo e busque fazer-nos rir!",
+            image
+        ],
         stream=True
     )
+
     response.resolve()
     
     print(response.text)
