@@ -35,8 +35,13 @@ def extract_subtitle_from_response(response_text: str):
     return {"legenda": legenda}
 
 def generate_subtitle(file: UploadFile) -> dict:
-    image_content = file.file.read()
-    image = Image.open(io.BytesIO(image_content))
+    try:
+        # Resetando o ponteiro para o início do arquivo e passando diretamente para o PIL
+        file.file.seek(0)
+        image = Image.open(file.file)
+        image.load()  # Esta chamada carrega a imagem e verifica sua validade
+    except UnidentifiedImageError:
+        raise ValueError("O arquivo fornecido não é uma imagem válida.")
 
     response = model.generate_content(
         [
@@ -60,7 +65,6 @@ def generate_subtitle(file: UploadFile) -> dict:
     )
 
     response.resolve()
-    
     print(response.text)
     
     meme_subtitles = extract_subtitle_from_response(response.text)
