@@ -16,7 +16,7 @@ if not gemini_api_key:
 
 genai.configure(api_key=gemini_api_key)
 
-model = genai.GenerativeModel("gemini-pro-vision")
+model = genai.GenerativeModel("gemini-1.5-pro-002")
 
 def extract_subtitle_from_response(response_text: str):
     try:
